@@ -2,7 +2,7 @@
 
 Windows 局域网唤醒（Wake-on-LAN）小工具。双击运行，弹出机器列表，看谁在线、勾选离线机器、一键唤醒。
 
-![主窗口](shots/light.png)
+![主窗口](docs/screenshot-light.png)
 
 ## 功能
 
@@ -21,6 +21,10 @@ Windows 局域网唤醒（Wake-on-LAN）小工具。双击运行，弹出机器�
 - **窗口可拉伸**：拖拽任意边缘调整大小，列表区自适应
 - **零依赖**：单 exe，免安装，无需管理员权限
 
+## 深色主题
+
+![深色主题](docs/screenshot-dark.png)
+
 ## 使用
 
 1. 下载 `WakeNow.exe`，放到任意目录
@@ -28,13 +32,14 @@ Windows 局域网唤醒（Wake-on-LAN）小工具。双击运行，弹出机器�
 3. 首次会看到空状态。两种录入方式：
 
    **方式 A：扫描内网（推荐，免手输）**
-   - 点底栏「扫描内网」，程序自动识别网段并扫描（约 10–30 秒）
+   - 点底栏「扫描内网」，程序自动识别网段并扫描
    - 列出发现的设备：主机名 / IP / MAC / 在线状态
    - 勾选需要的，点「保存选中」；也可点「全选在线」一次选完
    - 已在列表中的设备显示「已添加」，不会重复保存
 
    **方式 B：手动添加**
    - 点「添加机器」，逐项填写（字段见下）
+
    - **名称**：自定义，如「书房主机」
    - **MAC**：目标机器的有线网卡 MAC，如 `AA:BB:CC:DD:EE:FF` —— **唯一的必填项**
    - **IP**：**留空即可**，程序会自动发现（见下文）。也可手填以固定地址
@@ -142,7 +147,7 @@ WOL 要生效，被唤醒的机器必须满足以下条件（缺一不可）：
 窗口无系统边框，拉伸由程序自己实现：
 
 - 鼠标移到**任意边缘或四角**，光标会变成拉伸箭头
-- 拖拽即可改变高度（也可改宽度），最小 480×320
+- 拖拽即可改变高度（也可改宽度），最小宽度按底栏按钮实际需求自动计算
 - 列表区随高度自适应，底栏始终贴底
 
 ## 托盘与关闭行为
@@ -186,7 +191,7 @@ python -m venv .venv
 # 运行
 .venv\Scripts\python main.py
 
-# 自测（无界面，55 项断言）
+# 自测（无界面，195 项断言）
 .venv\Scripts\python tools\selftest.py
 
 # 渲染各状态截图到 shots/
@@ -210,11 +215,12 @@ app/
   scanner.py            局域网扫描：网段识别、ARP 探测、存活验证
   discover.py           MAC → IP 自动发现（ARP 扫描）
   monitor.py            后台探测线程 + ARP 发现线程
-  single_instance.py    单实例锁（QLocalServer）
+  single_instance.py    单实例锁（命名互斥体）
   tray.py               托盘图标与菜单
   autostart.py          开机自启（HKCU 注册表读写）
   transfer.py           导入导出与合并策略
-  theme.py              设计令牌与 QSS（浅/深双主题）  icons.py              内嵌 SVG 图标渲染（DPI 自适应）
+  theme.py              设计令牌与 QSS（浅/深双主题）
+  icons.py              内嵌 SVG 图标渲染（DPI 自适应）
   widgets/
     main_window.py      主窗口
     machine_row.py      列表行 + 状态点
@@ -223,19 +229,22 @@ app/
     scan_dialog.py      扫描内网对话框
     import_dialog.py    导入策略对话框
     toast.py            Toast 轻提示
+docs/                   截图（README 引用）
 tools/
-  selftest.py           无界面自测（191 项）
+  selftest.py           无界面自测（195 项）
   shot.py               离屏截图
   demo_discover.py      实网验证 IP 发现
   make_icon.py          生成 ico
 build.py                PyInstaller 打包
 DESIGN-v1.2.md          v1.2 功能设计文档
+PRD.md                  产品需求文档
+ui-design.html          可交互 UI 设计稿
 ```
 
 ### 设计
 
 UI 依据见 `PRD.md`，视觉稿见 `ui-design.html`（可交互 HTML 原型）。
-主窗口 560×420，8px 圆角，配色、字号、间距均取自设计令牌。
+主窗口配色、字号、间距均取自设计令牌，双主题共用同一套结构。
 
 ## 许可证
 
