@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WakeNow · UI 设计稿 v1.0</title>
+<style>
+/* ============================================================
+   WakeNow UI Spec Board
+   设计基调：Fluent 精密工具感 —— 克制的表面、干净的发丝线、
+   一刀切的强调色、有节制的动效。参考 Win11 设置/终端的观感，
+   但不做默认的"灰白方盒子"，而是用分层表面 + 空气感背景撑起层次。
+   ============================================================ */
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Segoe UI Variable Text","Segoe UI","Microsoft YaHei UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  background:
+    radial-gradient(1100px 640px at 8% -10%, rgba(21,54,88,.60) 0%, transparent 62%),
+    radial-gradient(880px 620px at 104% 106%, rgba(8,66,66,.45) 0%, transparent 58%),
+    radial-gradient(700px 500px at 62% 40%, rgba(30,32,58,.35) 0%, transparent 60%),
+    #0A0D12;
+  color:#C6CFDA;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size:22px 22px;
+  -webkit-mask-image:radial-gradient(1500px 1000px at 50% 15%, #000 0%, transparent 80%);
+  mask-image:radial-gradient(1500px 1000px at 50% 15%, #000 0%, transparent 80%);
+}
+.board{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:64px 32px 120px}
+
+/* ---------- 页头 ---------- */
+.hero{margin-bottom:56px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;
+  color:#7C8AA0;border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03);padding:5px 11px;border-radius:999px;
+}
+.eyebrow i{width:6px;height:6px;border-radius:50%;background:#00C2A8;box-shadow:0 0 10px #00C2A8}
+.hero h1{
+  margin:22px 0 0;font-size:52px;line-height:1.04;letter-spacing:-.03em;font-weight:700;
+  color:#F2F5F9;font-family:"Segoe UI Variable Display","Segoe UI",sans-serif;
+}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,#4FA6FF,#22D3C5);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:16px 0 0;max-width:660px;font-size:14.5px;line-height:1.75;color:#8D9AAC}
+.hero .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:22px}
+.tag{font-size:11.5px;padding:5px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.09);color:#93A1B4;background:rgba(255,255,255,.025)}
+
+/* ---------- 区块 ---------- */
+.sec{margin-top:64px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:26px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sec-head .num{font-size:11.5px;font-weight:700;letter-spacing:.1em;color:#22D3C5;font-variant-numeric:tabular-nums}
+.sec-head h2{margin:0;font-size:17px;font-weight:600;color:#E6EBF2;letter-spacing:.01em}
+.sec-head p{margin:0;font-size:13px;color:#7E8B9D}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:34px;justify-items:center}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.frame-col{display:flex;flex-direction:column;gap:14px;align-items:stretch;width:100%;max-width:560px}
+.frame-label{display:flex;align-items:center;justify-content:space-between}
+.frame-label b{font-size:12px;font-weight:600;color:#AEBBCC;letter-spacing:.02em}
+.frame-label span{font-size:11px;color:#6C7A8C;font-variant-numeric:tabular-nums}
+
+/* ============================================================
+   窗口外壳
+   ============================================================ */
+.win{
+  width:560px;height:420px;display:flex;flex-direction:column;overflow:hidden;position:relative;
+  border-radius:8px;
+  background:var(--bg);
+  color:var(--txt);
+  font-size:13px;
+  box-shadow:0 34px 76px -22px rgba(0,0,0,.80), 0 0 0 1px rgba(255,255,255,.07), 0 2px 6px rgba(0,0,0,.35);
+  --cols:46px minmax(0,1fr) 132px 118px;
+}
+.win[data-theme="light"]{
+  --bg:#FFFFFF; --bg-alt:#F6F7F9; --surface:#FFFFFF; --surface-hi:#EFF2F6; --surface-sunk:#FAFBFC;
+  --hairline:rgba(16,24,40,.075); --border:rgba(16,24,40,.11); --border-hi:rgba(16,24,40,.20);
+  --txt:#111418; --txt-2:#5B6472; --txt-3:#98A1AF;
+  --accent:#0E7CE6; --accent-soft:rgba(14,124,230,.10);
+  --grad:linear-gradient(135deg,#1478E8 0%,#00B4D8 100%);
+  --grad-glow:0 8px 20px -8px rgba(14,124,230,.75);
+  --online:#0FA05C; --online-soft:rgba(15,160,92,.14);
+  --offline:#96A0AE;
+  --waking:#C9820A; --waking-soft:rgba(201,130,10,.10);
+  --danger:#D93F3F; --danger-soft:rgba(217,63,63,.09);
+  --row-dim:.45;
+  --shadow-pop:0 18px 44px -14px rgba(16,24,40,.34), 0 2px 6px rgba(16,24,40,.10);
+}
+.win[data-theme="dark"]{
+  --bg:#1B1F25; --bg-alt:#191D22; --surface:#262B33; --surface-hi:#2C323B; --surface-sunk:#20242A;
+  --hairline:rgba(255,255,255,.065); --border:rgba(255,255,255,.10); --border-hi:rgba(255,255,255,.19);
+  --txt:#E8ECF2; --txt-2:#9BA4B2; --txt-3:#6E7788;
+  --accent:#4A9DFF; --accent-soft:rgba(74,157,255,.15);
+  --grad:linear-gradient(135deg,#2E8DFF 0%,#12CDBE 100%);
+  --grad-glow:0 8px 22px -8px rgba(46,141,255,.70);
+  --online:#37D07E; --online-soft:rgba(55,208,126,.15);
+  --offline:#69707E;
+  --waking:#F0B24A; --waking-soft:rgba(240,178,74,.11);
+  --danger:#FF6B6B; --danger-soft:rgba(255,107,107,.12);
+  --row-dim:.42;
+  --shadow-pop:0 20px 48px -16px rgba(0,0,0,.72), 0 2px 6px rgba(0,0,0,.45);
+}
+
+/* ---------- 标题栏 ---------- */
+.chrome{
+  height:40px;flex:none;display:flex;align-items:center;justify-content:space-between;
+  padding-left:14px;border-bottom:1px solid var(--hairline);
+  background:linear-gradient(180deg, rgba(255,255,255,.035), transparent);
+}
+.win[data-theme="light"] .chrome{background:linear-gradient(180deg,#FDFDFE,#F8F9FB)}
+.brand{display:flex;align-items:center;gap:8px}
+.brand .mark{
+  width:22px;height:22px;border-radius:6px;flex:none;display:grid;place-items:center;color:#fff;
+  background:var(--grad);box-shadow:0 2px 7px -2px rgba(14,124,230,.85), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.brand .mark svg{display:block}
+.brand .name{font-size:13.5px;font-weight:600;letter-spacing:.01em;color:var(--txt)}
+.brand .name b{font-weight:600;background:linear-gradient(100deg,var(--accent),#00C2A8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.win[data-theme="dark"] .brand .name b{background:linear-gradient(100deg,#5EB0FF,#2EE0CE);-webkit-background-clip:text;background-clip:text;color:transparent}
+.chrome-btns{display:flex;height:100%}
+.cbtn{
+  width:44px;height:100%;border:0;background:transparent;color:var(--txt-2);display:grid;place-items:center;
+  cursor:pointer;transition:background .13s ease,color .13s ease;
+}
+.cbtn:hover{background:var(--surface-hi);color:var(--txt)}
+.cbtn.close:hover{background:#D93F3F;color:#fff}
+
+/* ---------- 工具条 ---------- */
+.toolbar{
+  height:44px;flex:none;display:flex;align-items:center;gap:12px;padding:0 14px;
+  border-bottom:1px solid var(--hairline);
+}
+.search{
+  flex:1;min-width:0;height:30px;display:flex;align-items:center;gap:8px;padding:0 10px;
+  border:1px solid var(--border);border-radius:6px;background:var(--surface-sunk);
+  color:var(--txt-3);transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:var(--bg)}
+.search input{
+  flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:12.5px;color:var(--txt);
+  font-family:inherit;
+}
+.search input::placeholder{color:var(--txt-3)}
+.stats{display:flex;align-items:center;gap:10px;flex:none;font-size:11.5px;color:var(--txt-2);font-variant-numeric:tabular-nums}
+.stat{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.sdot{width:7px;height:7px;border-radius:50%;flex:none}
+.sdot.on{background:var(--online);box-shadow:0 0 0 3px var(--online-soft)}
+.sdot.off{background:var(--offline)}
+.sdot.wk{background:var(--waking);box-shadow:0 0 0 3px var(--waking-soft);animation:breath 1.5s ease-in-out infinite}
+.stats .sep{width:1px;height:12px;background:var(--border)}
+
+/* ---------- 列表 ---------- */
+.table{flex:1;min-height:0;display:flex;flex-direction:column}
+.thead{
+  height:30px;flex:none;display:grid;grid-template-columns:var(--cols);align-items:center;padding:0 14px;
+  font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--txt-3);
+  border-bottom:1px solid var(--border);background:var(--surface-sunk);
+  text-transform:uppercase;
+}
+.sortable{cursor:pointer;display:flex;align-items:center;gap:5px;user-select:none;transition:color .13s}
+.sortable:hover{color:var(--txt-2)}
+.sortable .arw{opacity:0;transition:opacity .13s}
+.sortable.on{color:var(--accent)}
+.sortable.on .arw{opacity:1}
+.tbody{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden}
+.tbody::-webkit-scrollbar{width:9px}
+.tbody::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:9px;border:3px solid transparent;background-clip:padding-box}
+.tbody::-webkit-scrollbar-thumb:hover{background:var(--txt-3);background-clip:padding-box}
+
+.row{
+  display:grid;grid-template-columns:var(--cols);align-items:center;height:44px;padding:0 14px;
+  position:relative;border-bottom:1px solid var(--hairline);
+  animation:rowIn .5s cubic-bezier(.2,.75,.3,1) backwards;
+  animation-delay:calc(var(--i,0) * 55ms);
+  transition:background .13s ease;
+}
+.row:hover{background:var(--surface-hi)}
+.row[data-sel="1"]{background:var(--accent-soft)}
+.row[data-sel="1"]:hover{background:color-mix(in srgb, var(--accent) 15%, var(--surface-hi))}
+.row .nm{font-weight:500;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.005em}
+.row .mac{
+  display:block;font-size:10.5px;color:var(--txt-3);letter-spacing:.06em;margin-top:1px;
+  font-variant-numeric:tabular-nums;font-family:ui-monospace,"Cascadia Mono","Consolas",monospace;
+}
+.row .addr{font-size:12.5px;color:var(--txt-2);font-variant-numeric:tabular-nums;font-family:ui-monospace,"Cascadia Mono","Consolas",monospace}
+.row .st{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.row .dot{width:8px;height:8px;border-radius:50%;flex:none;position:relative}
+.row .stext{white-space:nowrap}
+
+/* 在线 */
+.row.s-online .dot{background:var(--online);box-shadow:0 0 0 3px var(--online-soft)}
+.row.s-online .stext{color:var(--txt);font-weight:500}
+/* 离线 —— 整行文字降不透明度 */
+.row.s-offline .nm,.row.s-offline .addr,.row.s-offline .mac{opacity:var(--row-dim)}
+.row.s-offline .dot{background:var(--offline);opacity:.55}
+.row.s-offline .stext{color:var(--txt-2);opacity:var(--row-dim)}
+/* 唤醒中 —— 脉冲 + 三点省略 + 行内扫光 */
+.row.s-waking{background:var(--waking-soft)}
+.row.s-waking:hover{background:color-mix(in srgb, var(--waking) 16%, var(--surface-hi))}
+.row.s-waking .dot{background:var(--waking);animation:pulse 1.35s cubic-bezier(.4,0,.6,1) infinite}
+.row.s-waking .stext{color:var(--waking);font-weight:500}
+.row.s-waking .dots{display:inline-flex;gap:3px;margin-left:1px;vertical-align:middle}
+.row.s-waking .dots i{width:3px;height:3px;border-radius:50%;background:currentColor;animation:blink 1.05s infinite}
+.row.s-waking .dots i:nth-child(2){animation-delay:.16s}
+.row.s-waking .dots i:nth-child(3){animation-delay:.32s}
+.row.s-waking::after{
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:2px;
+  background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.16) 50%,transparent 70%);
+  background-size:260% 100%;animation:sweep 2.4s linear infinite;
+}
+
+/* 复选框 */
+.cb{
+  position:relative;
+  width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border-hi);
+  background:var(--bg);display:grid;place-items:center;cursor:pointer;padding:0;
+  transition:background .14s ease,border-color .14s ease,transform .1s ease;
+}
+.cb svg{opacity:0;transform:scale(.6);transition:opacity .13s ease,transform .16s cubic-bezier(.2,1.4,.4,1);color:#fff}
+.cb:hover{border-color:var(--accent)}
+.cb:active{transform:scale(.92)}
+.cb[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.cb[aria-checked="true"] svg{opacity:1;transform:scale(1)}
+.cb.mixed{background:var(--accent);border-color:var(--accent)}
+.cb.mixed::after{content:"";width:9px;height:2px;border-radius:2px;background:#fff;position:absolute}
+.cb.mixed svg{opacity:0}
+
+/* ---------- 空状态 ---------- */
+.tbody{position:relative}
+.empty{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;padding-bottom:6px;text-align:center;flex:1;min-height:0;
+}
+.win.is-empty .empty{display:flex}
+.win.is-empty .thead,.win.is-empty .tbody,.win.is-empty .toolbar{display:none}
+.win.is-empty .foot-l{visibility:hidden}
+.empty-art{color:var(--txt-3);margin-bottom:6px;animation:floaty 6s ease-in-out infinite}
+.empty-art .zzz{font-family:"Segoe UI",sans-serif;font-weight:700;animation:zzz 2.6s ease-in-out infinite}
+.empty-art .zzz:nth-of-type(2){animation-delay:.35s}
+.empty-art .zzz:nth-of-type(3){animation-delay:.7s}
+.empty h4{margin:0;font-size:14.5px;font-weight:600;color:var(--txt);letter-spacing:.01em}
+.empty p{margin:0;font-size:12.5px;color:var(--txt-3)}
+.empty .btn-primary{margin-top:16px;height:36px}
+.empty-noresult{font-size:12.5px;color:var(--txt-3);padding:36px 0;text-align:center;display:none}
+
+/* ---------- 底部按钮栏 ---------- */
+.footer{
+  height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;
+  border-top:1px solid var(--hairline);
+  background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--bg-alt) 60%,transparent));
+}
+.foot-l{display:flex;align-items:center;gap:4px}
+
+/* 幽灵按钮 */
+.btn{
+  height:30px;padding:0 10px;border-radius:6px;border:1px solid transparent;background:transparent;
+  color:var(--txt-2);font:inherit;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;
+  transition:background .13s ease,color .13s ease,border-color .13s ease,transform .08s ease;
+}
+.btn:hover{background:var(--surface-hi);color:var(--txt);border-color:var(--border)}
+.btn:active{transform:translateY(1px)}
+.btn svg{flex:none;opacity:.85}
+.btn.danger:hover{background:var(--danger-soft);color:var(--danger);border-color:color-mix(in srgb,var(--danger) 30%,transparent)}
+.btn .kbd{font-size:10px;color:var(--txt-3);border:1px solid var(--border);border-radius:4px;padding:1px 4px;margin-left:2px}
+
+/* 主按钮：视觉重心 */
+.btn-primary{
+  height:36px;padding:0 16px;border:0;border-radius:7px;cursor:pointer;
+  background:var(--grad);color:#fff;font:inherit;font-size:13px;font-weight:600;letter-spacing:.01em;
+  display:inline-flex;align-items:center;gap:8px;
+  box-shadow:var(--grad-glow), inset 0 1px 0 rgba(255,255,255,.28);
+  transition:transform .1s ease,box-shadow .18s ease,filter .18s ease;
+  position:relative;overflow:hidden;
+}
+.btn-primary:hover{filter:brightness(1.07);box-shadow:var(--grad-glow), inset 0 1px 0 rgba(255,255,255,.34), 0 10px 26px -10px rgba(14,124,230,.85)}
+.btn-primary:active{transform:translateY(1px) scale(.985)}
+.btn-primary .cnt{font-variant-numeric:tabular-nums;opacity:.92;font-weight:600}
+.btn-primary .cnt::before{content:"(";}
+.btn-primary .cnt::after{content:")";}
+.btn-primary .bolt{display:block;transition:transform .3s cubic-bezier(.2,1.4,.4,1)}
+.btn-primary:hover .bolt{transform:scale(1.16) rotate(-6deg)}
+.btn-primary:disabled{
+  background:var(--surface-hi);color:var(--txt-3);box-shadow:none;cursor:not-allowed;filter:none;
+  border:1px solid var(--border);
+}
+.btn-primary:disabled .bolt{opacity:.5}
+.win[data-theme="dark"] .btn-primary:disabled{background:#2A3038;color:#69707E}
+
+/* ---------- 覆盖层 / 对话框 ---------- */
+.overlay{
+  position:absolute;inset:0;background:rgba(12,16,22,.42);backdrop-filter:blur(2.5px);
+  display:none;align-items:center;justify-content:center;z-index:30;
+}
+.win[data-theme="dark"] .overlay{background:rgba(0,0,0,.55)}
+.overlay.on{display:flex;animation:fade .18s ease both}
+.dialog{
+  width:380px;border-radius:8px;background:var(--bg);overflow:hidden;
+  box-shadow:var(--shadow-pop), 0 0 0 1px var(--border);
+  animation:pop .26s cubic-bezier(.2,.9,.3,1.15) both;
+}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
+.dlg-head h3{margin:0;font-size:14.5px;font-weight:600;color:var(--txt);letter-spacing:.01em}
+.dlg-close{width:26px;height:26px;border:0;background:transparent;border-radius:6px;color:var(--txt-3);display:grid;place-items:center;cursor:pointer}
+.dlg-close:hover{background:var(--surface-hi);color:var(--txt)}
+.dlg-body{padding:2px 16px 6px;display:flex;flex-direction:column;gap:9px}
+.fld{display:grid;grid-template-columns:64px minmax(0,1fr);align-items:center;gap:10px}
+.fld>label{font-size:12.5px;color:var(--txt-2);text-align:right;letter-spacing:.01em}
+.fld>label .req{color:var(--danger);margin-left:2px}
+.ipt{
+  height:32px;padding:0 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface-sunk);
+  font:inherit;font-size:12.5px;color:var(--txt);outline:0;width:100%;
+  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+  font-family:ui-monospace,"Cascadia Mono","Consolas",monospace;letter-spacing:.02em;
+}
+.fld.name-f .ipt{font-family:inherit;letter-spacing:0}
+.ipt::placeholder{color:var(--txt-3);font-family:inherit;letter-spacing:0}
+.ipt:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:var(--bg)}
+.fld.bad .ipt{border-color:var(--danger);box-shadow:0 0 0 3px var(--danger-soft)}
+.err{grid-column:2;font-size:11px;color:var(--danger);display:none;align-items:center;gap:5px;margin-top:-4px}
+.fld.bad .err{display:flex}
+.dlg-foot{display:flex;justify-content:flex-end;gap:8px;padding:14px 16px 16px}
+.dlg-foot .btn{height:32px;padding:0 14px;border:1px solid var(--border);color:var(--txt-2)}
+.dlg-foot .btn:hover{background:var(--surface-hi)}
+.dlg-foot .btn-primary{height:32px;padding:0 18px}
+
+/* ---------- Toast ---------- */
+.toasts{
+  position:absolute;left:50%;bottom:60px;transform:translateX(-50%);z-index:40;
+  display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:max-content;max-width:88%;
+}
+.toast{
+  display:flex;align-items:center;gap:9px;padding:9px 13px 9px 10px;border-radius:8px;
+  background:var(--surface);border:1px solid var(--border);
+  box-shadow:var(--shadow-pop);font-size:12.5px;color:var(--txt);white-space:nowrap;
+  opacity:0;transform:translateY(10px) scale(.97);
+  transition:opacity .22s ease,transform .26s cubic-bezier(.2,.9,.3,1.1);
+}
+.toast.in{opacity:1;transform:translateY(0) scale(1)}
+.t-ico{width:18px;height:18px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff}
+.toast--success .t-ico{background:var(--online)}
+.toast--info .t-ico{background:var(--accent)}
+.toast--error .t-ico{background:var(--danger)}
+.toast--success{border-color:color-mix(in srgb,var(--online) 26%,transparent)}
+.toast--error{border-color:color-mix(in srgb,var(--danger) 30%,transparent)}
+
+/* Toast 静态示意 */
+.toast-stage{
+  border-radius:12px;padding:30px 26px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;
+  border:1px solid rgba(255,255,255,.07);
+}
+.toast-stage[data-theme="light"]{background:#FFFFFF}
+.toast-stage[data-theme="dark"]{background:#1B1F25}
+.toast-stage .toast{opacity:1;transform:none;position:relative;left:0}
+.toast-stage .cap{font-size:11px;color:#6E7788;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+
+/* ---------- 右键菜单 ---------- */
+.ctx{
+  position:absolute;z-index:35;min-width:152px;padding:5px;border-radius:8px;display:none;
+  background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-pop);
+  animation:pop .16s cubic-bezier(.2,.9,.3,1.1) both;
+}
+.ctx.on{display:block}
+.ctx button{
+  width:100%;height:30px;border:0;background:transparent;border-radius:6px;cursor:pointer;
+  display:flex;align-items:center;gap:9px;padding:0 9px;font:inherit;font-size:12.5px;color:var(--txt-2);
+}
+.ctx button:hover{background:var(--surface-hi);color:var(--txt)}
+.ctx button.danger:hover{background:var(--danger-soft);color:var(--danger)}
+.ctx .hr{height:1px;background:var(--hairline);margin:4px 6px}
+
+/* ============================================================
+   画板辅助元素
+   ============================================================ */
+.tok-grid{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:22px}
+.card{
+  border:1px solid rgba(255,255,255,.075);border-radius:12px;padding:20px;
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));
+}
+.card h3{margin:0 0 14px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#8B98AB}
+.sw{display:flex;align-items:center;gap:11px;padding:5px 0}
+.sw .chip{width:26px;height:26px;border-radius:7px;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.12), 0 3px 8px rgba(0,0,0,.35)}
+.sw b{font-size:12.5px;font-weight:600;color:#DDE4EC;flex:none;min-width:64px}
+.sw code{font-size:11px;color:#7F8C9E;font-family:ui-monospace,"Cascadia Mono",monospace;letter-spacing:.02em}
+.spec{width:100%;border-collapse:collapse;font-size:12.5px}
+.spec th{text-align:left;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#76839A;font-weight:600;padding:0 14px 10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.spec td{padding:9px 14px 9px 0;border-bottom:1px solid rgba(255,255,255,.05);color:#A9B5C6;vertical-align:top}
+.spec td:first-child{color:#E3E9F1;font-weight:500;white-space:nowrap}
+.spec code{font-size:11.5px;font-family:ui-monospace,"Cascadia Mono",monospace;color:#6FD8CE;letter-spacing:.02em}
+.type-row{display:flex;align-items:baseline;gap:14px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.type-row:last-child{border:0}
+.type-row .demo{color:#E8EDF4;flex:none;min-width:132px}
+.type-row .lbl{font-size:11.5px;color:#7C8A9D;font-family:ui-monospace,"Cascadia Mono",monospace}
+.iconset{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.ico-cell{
+  border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px 10px;display:flex;flex-direction:column;
+  align-items:center;gap:10px;background:rgba(255,255,255,.018);color:#B7C3D2;
+}
+.ico-cell span{font-size:10.5px;color:#6F7C90;letter-spacing:.04em}
+.note-list{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:12px 28px}
+.note-list li{font-size:12.5px;line-height:1.7;color:#8D9AAC;padding-left:16px;position:relative}
+.note-list li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#22D3C5;opacity:.85}
+.note-list li b{color:#D6DEE8;font-weight:600}
+.note-list li code{font-family:ui-monospace,"Cascadia Mono",monospace;font-size:11.5px;color:#6FD8CE}
+
+/* ---------- 动画 ---------- */
+@keyframes rowIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--waking) 55%,transparent)}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes sweep{0%{background-position:180% 0}100%{background-position:-80% 0}}
+@keyframes breath{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:translateY(-8px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes zzz{0%{opacity:0;transform:translate(0,4px)}25%{opacity:.9}100%{opacity:0;transform:translate(6px,-9px)}}
+@media (max-width:1180px){
+  .grid-2{grid-template-columns:1fr}
+  .tok-grid,.grid-3{grid-template-columns:1fr}
+  .iconset{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="board">
+
+  <header class="hero">
+    <div class="eyebrow"><i></i>UI Spec · v1.0 · 2026-10-17</div>
+    <h1>WakeNow <em>一键唤醒</em></h1>
+    <p>局域网唤醒工具的界面设计稿。基调取 Win11 原生工具的克制与精密——发丝级分隔线、分层表面、单一强调色贯穿，主按钮承载全部视觉重量。状态区分不依赖颜色单一维度：图标 + 文字 + 灰度三重编码。</p>
+    <div class="meta">
+      <span class="tag">浅色 / 深色双主题</span>
+      <span class="tag">主窗口 560 × 420</span>
+      <span class="tag">3 个界面元素</span>
+      <span class="tag">可交互原型</span>
+      <span class="tag">纯 HTML / CSS / JS</span>
+    </div>
+  </header>
+
+  <!-- 01 令牌 -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">01</span><h2>设计令牌</h2><p>色彩 · 字体 · 几何</p></div>
+    <div class="tok-grid">
+      <div class="card">
+        <h3>色彩</h3>
+        <div class="sw"><span class="chip" style="background:linear-gradient(135deg,#1478E8,#00B4D8)"></span><b>主强调</b><code>#0E7CE6 → #00C2A8</code></div>
+        <div class="sw"><span class="chip" style="background:#0FA05C"></span><b>在线</b><code>#0FA05C / #37D07E</code></div>
+        <div class="sw"><span class="chip" style="background:#96A0AE"></span><b>离线</b><code>#96A0AE / #69707E</code></div>
+        <div class="sw"><span class="chip" style="background:#C9820A"></span><b>唤醒中</b><code>#C9820A / #F0B24A</code></div>
+        <div class="sw"><span class="chip" style="background:#D93F3F"></span><b>危险 / 错误</b><code>#D93F3F / #FF6B6B</code></div>
+        <div class="sw"><span class="chip" style="background:#111418"></span><b>文字 1/2/3</b><code>#111418 · #5B6472 · #98A1AF</code></div>
+      </div>
+      <div class="card">
+        <h3>字体</h3>
+        <div class="type-row"><span class="demo" style="font-size:15px;font-weight:600">标题 15 / 600</span><span class="lbl">M YaHei UI · Segoe UI</span></div>
+        <div class="type-row"><span class="demo" style="font-size:13px">正文 13 / 400</span><span class="lbl">行高 1.5</span></div>
+        <div class="type-row"><span class="demo" style="font-size:12.5px;color:#9BA4B2">次要 12.5 / 400</span><span class="lbl">IP · 统计 · 按钮</span></div>
+        <div class="type-row"><span class="demo" style="font-size:11px;color:#7C8A9D">标签 11 / 600 / .05em</span><span class="lbl">大写字母间距</span></div>
+        <div class="type-row"><span class="demo" style="font-size:11px;font-family:ui-monospace,monospace">MAC 11 / mono</span><span class="lbl">等宽 + tabular-nums</span></div>
+      </div>
+      <div class="card">
+        <h3>几何</h3>
+        <div class="sw"><b style="min-width:84px">窗口圆角</b><code>8px</code></div>
+        <div class="sw"><b style="min-width:84px">按钮圆角</b><code>6px（主按钮 7px）</code></div>
+        <div class="sw"><b style="min-width:84px">复选框</b><code>18px · r=5px</code></div>
+        <div class="sw"><b style="min-width:84px">列表行高</b><code>44px（≥36 要求）</code></div>
+        <div class="sw"><b style="min-width:84px">栏高</b><code>标题 40 · 工具 44 · 底 52</code></div>
+        <div class="sw"><b style="min-width:84px">内间距</b><code>横向 14px</code></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 主窗口 -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">02</span><h2>主窗口</h2><p>浅色 / 深色 —— 可真实操作：勾选、全选离线、唤醒、搜索、排序、右键</p></div>
+    <div class="grid-2">
+      <div class="frame-col">
+        <div class="frame-label"><b>主窗口 · 浅色</b><span>560 × 420</span></div>
+        <div id="w-light"></div>
+      </div>
+      <div class="frame-col">
+        <div class="frame-label"><b>主窗口 · 深色</b><span>560 × 420</span></div>
+        <div id="w-dark"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 空状态 -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">03</span><h2>空状态</h2><p>列表无机器时的替代视图</p></div>
+    <div class="grid-2">
+      <div class="frame-col">
+        <div class="frame-label"><b>空状态 · 浅色</b><span>插图 + 主副文案 + 大按钮</span></div>
+        <div id="e-light"></div>
+      </div>
+      <div class="frame-col">
+        <div class="frame-label"><b>空状态 · 深色</b><span>插图 + 主副文案 + 大按钮</span></div>
+        <div id="e-dark"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 对话框 -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">04</span><h2>机器编辑对话框</h2><p>添加 / 编辑共用 · 380 × 340 · 左：默认态，右：校验错误态</p></div>
+    <div class="grid-2">
+      <div class="frame-col">
+        <div class="frame-label"><b>添加机器 · 默认</b><span>模态 · 蒙版模糊</span></div>
+        <div id="d-default"></div>
+      </div>
+      <div class="frame-col">
+        <div class="frame-label"><b>校验失败态</b><span>红边 + 红色提示行</span></div>
+        <div id="d-error"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Toast -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">05</span><h2>Toast 轻提示</h2><p>窗口内底部居中浮起 · 2.6s 自动消失</p></div>
+    <div class="grid-3">
+      <div class="toast-stage" data-theme="light">
+        <span class="cap">浅色 · 成功</span>
+        <div class="toast toast--success"><span class="t-ico" id="ts1"></span><span>已向 2 台机器发送唤醒包</span></div>
+        <div class="toast toast--info"><span class="t-ico" id="ts2"></span><span>1 台已在线，已跳过</span></div>
+        <div class="toast toast--error"><span class="t-ico" id="ts3"></span><span>发送失败，请检查网络连接</span></div>
+      </div>
+      <div class="toast-stage" data-theme="dark">
+        <span class="cap">深色 · 成功</span>
+        <div class="toast toast--success"><span class="t-ico" id="ts4"></span><span>已向 2 台机器发送唤醒包</span></div>
+        <div class="toast toast--info"><span class="t-ico" id="ts5"></span><span>1 台已在线，已跳过</span></div>
+        <div class="toast toast--error"><span class="t-ico" id="ts6"></span><span>发送失败，请检查网络连接</span></div>
+      </div>
+      <div class="card">
+        <h3>使用规则</h3>
+        <ul class="note-list" style="grid-template-columns:1fr">
+          <li><b>成功</b>：绿勾 —— 魔术包已发出。</li>
+          <li><b>提示</b>：蓝 i —— 跳过 / 非阻断信息，可连续叠加。</li>
+          <li><b>错误</b>：红 ! —— 发送失败、配置损坏等需关注事件。</li>
+          <li>单条 2.6s 自动消失；多条向上堆叠，不遮挡底部主按钮。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 图标 -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">06</span><h2>图标集</h2><p>统一线性风格 · 1.5–1.6px 线宽 · 24 网格</p></div>
+    <div class="iconset" id="iconset"></div>
+  </section>
+
+  <!-- 07 标注 -->
+  <section class="sec">
+    <div class="sec-head"><span class="num">07</span><h2>规范标注</h2><p>交付给开发的取值清单</p></div>
+    <div class="grid-3">
+      <div class="card">
+        <h3>布局 · 主窗口</h3>
+        <table class="spec">
+          <tr><td>窗口</td><td><code>560 × 420</code>，最小 480 × 320</td></tr>
+          <tr><td>标题栏</td><td>高 <code>40</code>，左内距 <code>14</code>，chrome 按钮 <code>44×40</code></td></tr>
+          <tr><td>工具条</td><td>高 <code>44</code>，搜索框高 <code>30</code>，右浮统计 <code>11.5px</code></td></tr>
+          <tr><td>表头</td><td>高 <code>30</code>，列 <code>46 / 1fr / 132 / 118</code></td></tr>
+          <tr><td>行</td><td>高 <code>44</code>，左内距 <code>14</code>，hover 底色</td></tr>
+          <tr><td>底栏</td><td>高 <code>52</code>，幽灵按钮 <code>30</code>，主按钮 <code>36</code></td></tr>
+          <tr><td>Toast</td><td>底部居中，距底 <code>60</code>，max-width <code>88%</code></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>状态视觉编码</h3>
+        <table class="spec">
+          <tr><td>在线</td><td>绿点 + 光晕环，文字 <code>#111418</code> 正常不透明，500 字重</td></tr>
+          <tr><td>离线</td><td>灰点 + <code>opacity:.45</code> 整行文字，状态文字同样降透明</td></tr>
+          <tr><td>唤醒中</td><td>琥珀点脉冲 + 三点省略动画 + 行内 <code>sweep</code> 扫光</td></tr>
+          <tr><td>选中</td><td>行底 <code>accent 10%</code> 叠加，复选框实心强调色</td></tr>
+          <tr><td>色弱兜底</td><td>图标 + 文字 + 灰度三重区分，色相永远不是唯一手段</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>动效</h3>
+        <table class="spec">
+          <tr><td>列表入场</td><td><code>rowIn .5s</code>，逐行 <code>55ms</code> 级差</td></tr>
+          <tr><td>行 hover</td><td>底色 <code>.13s ease</code></td></tr>
+          <tr><td>复选框</td><td>勾选 <code>.16s</code> 回弹曲线</td></tr>
+          <tr><td>主按钮</td><td>hover 提亮 + 闪电放大旋转，press 下沉 1px</td></tr>
+          <tr><td>对话框</td><td>蒙版 <code>fade .18s</code> + 面板 <code>pop .26s</code> 回弹</td></tr>
+          <tr><td>Toast</td><td>上浮 <code>10px</code> + 缩放，<code>.26s</code> 回弹</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="num">08</span><h2>设计说明</h2><p>为什么这么做</p></div>
+    <ul class="note-list">
+      <li><b>一个视觉重心</b>：整个界面只有【唤醒选中】是实心强调色填充，其余全是幽灵按钮——眼睛不需要寻找下一步。</li>
+      <li><b>离线即降级</b>：整行文字降到 45% 不透明度，是在线/离线最省认知成本的表达；复选框刻意不降，保证离线机仍可被勾选。</li>
+      <li><b>MAC 藏在副行</b>：线框只要求名称/IP/状态三列，MAC 作为名称下方 10.5px 等宽副行呈现，信息不丢失、列宽不膨胀。</li>
+      <li><b>能量渐变</b>：主按钮取电光蓝→青，与状态绿/灰完全不撞色，唤醒动作与状态色系统互不干扰。</li>
+      <li><b>发丝线代替阴影</b>：分隔与层级靠 <code>rgba</code> 发丝线完成，避免 Win32 式厚重边框，同时保证两套主题下的层次一致。</li>
+      <li><b>主按钮禁用而非隐藏</b>：未勾选时按钮变灰不可点，而非消失——位置固定，用户点两次就形成肌肉记忆。</li>
+    </ul>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   图标
+   ============================================================ */
+var ICON = {
+  bolt:'<path d="M13.4 2.2 5.1 13.5h6L10.7 21.8 19 10.5h-6z" fill="currentColor" stroke="none"/>',
+  search:'<circle cx="11" cy="11" r="6.6"/><path d="m20 20-3.6-3.6"/>',
+  plus:'<path d="M12 5.4v13.2M5.4 12h13.2"/>',
+  pencil:'<path d="M4.5 19.5h4L19 9l-4-4L4.5 15.5z"/><path d="m14.2 5.8 4 4"/>',
+  trash:'<path d="M4.5 7h15M9.5 7V4.8h5V7M6.6 7l.9 12.2h9l.9-12.2"/>',
+  check:'<path d="M5 12.6 9.4 17 19 7.2"/>',
+  info:'<circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5.4M12 7.8v.6"/>',
+  alert:'<path d="M12 3.4 2.8 19.6h18.4z"/><path d="M12 10v4.4M12 17.2v.6"/>',
+  close:'<path d="m6.6 6.6 10.8 10.8M17.4 6.6 6.6 17.4"/>',
+  min:'<path d="M5.5 12h13"/>',
+  chev:'<path d="m8 10 4 4 4-4"/>',
+  arrow:'<path d="M12 5.5v13M6.5 11 12 5.5 17.5 11"/>',
+  power:'<path d="M12 3.6v8.2"/><path d="M7.4 6.9a7.2 7.2 0 1 0 9.2 0"/>',
+  refresh:'<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20.2 4.2v4.4h-4.4"/>',
+  wifi:'<path d="M4 9.4a12 12 0 0 1 16 0M7 13a8 8 0 0 1 10 0"/><path d="M12 17.4v.4"/>'
+};
+function ico(name,size,sw){
+  return '<svg viewBox="0 0 24 24" width="'+(size||16)+'" height="'+(size||16)+'" fill="none" stroke="currentColor" stroke-width="'+(sw||1.6)+'" stroke-linecap="round" stroke-linejoin="round">'+ICON[name]+'</svg>';
+}
+
+/* ============================================================
+   主窗口组件
+   ============================================================ */
+function createWin(mount, opts){
+  var o = Object.assign({theme:'light', machines:[], freeze:false, empty:false}, opts||{});
+
+  var machines = (o.machines||[]).map(function(m,i){ return Object.assign({_id:i}, m); });
+  var sel = {};           /* id -> true */
+  var query = '';
+  var sortKey = null, sortDir = 1;
+  var dblLock = false;
+  var resolveTimers = [];
+
+  mount.classList.add('win');
+  mount.dataset.theme = o.theme;
+  if(o.empty) mount.classList.add('is-empty');
+
+  mount.innerHTML =
+  '<div class="chrome">'+
+    '<div class="brand"><span class="mark">'+ico('bolt',13)+'</span><span class="name">Wake<b>Now</b></span></div>'+
+    '<div class="chrome-btns">'+
+      '<button class="cbtn" title="最小化">'+ico('min',14,1.5)+'</button>'+
+      '<button class="cbtn close" title="关闭">'+ico('close',13,1.5)+'</button>'+
+    '</div>'+
+  '</div>'+
+  '<div class="toolbar">'+
+    '<div class="search">'+ico('search',15,1.7)+'<input type="text" placeholder="搜索机器…" spellcheck="false"></div>'+
+    '<div class="stats"></div>'+
+  '</div>'+
+  '<div class="table">'+
+    '<div class="thead">'+
+      '<div><button class="cb" data-role="all" role="checkbox" aria-checked="false" aria-label="全选">'+ico('check',11,2.6)+'</button></div>'+
+      '<div class="sortable" data-sort="name"><span>名称</span><span class="arw">'+ico('arrow',11,2)+'</span></div>'+
+      '<div class="sortable" data-sort="ip"><span>IP</span><span class="arw">'+ico('arrow',11,2)+'</span></div>'+
+      '<div>状态</div>'+
+    '</div>'+
+    '<div class="tbody"></div>'+
+    '<div class="empty-noresult">没有匹配的机器</div>'+
+    '<div class="empty">'+emptyArt()+
+      '<h4>还没有录入机器</h4><p>添加一台机器，随时随地一键唤醒</p>'+
+      '<button class="btn-primary" data-role="empty-add"><span class="bolt">'+ico('bolt',14)+'</span>添加机器</button>'+
+    '</div>'+
+  '</div>'+
+  '<div class="footer">'+
+    '<div class="foot-l">'+
+      '<button class="btn" data-role="offline">'+ico('power',14)+'全选离线</button>'+
+      '<button class="btn" data-role="add">'+ico('plus',14)+'添加</button>'+
+      '<button class="btn" data-role="edit">'+ico('pencil',14)+'编辑</button>'+
+      '<button class="btn danger" data-role="del">'+ico('trash',14)+'删除</button>'+
+    '</div>'+
+    '<button class="btn-primary" data-role="wake" disabled>'+
+      '<span class="bolt">'+ico('bolt',15)+'</span>唤醒选中<span class="cnt">0</span>'+
+    '</button>'+
+  '</div>'+
+  '<div class="overlay"></div>'+
+  '<div class="ctx"></div>'+
+  '<div class="toasts"></div>';
+
+  var q = function(s){ return mount.querySelector(s); };
+  var tbody = q('.tbody'), thead = q('.thead'), statsEl = q('.stats'),
+      allCb = q('[data-role="all"]'), wakeBtn = q('[data-role="wake"]'),
+      searchEl = q('.search input'), overlay = q('.overlay'),
+      ctxEl = q('.ctx'), toastsEl = q('.toasts'), noResult = q('.empty-noresult');
+
+  /* ---------- 数据视图 ---------- */
+  function view(){
+    var kw = query.trim().toLowerCase();
+    var list = machines.filter(function(m){
+      if(!kw) return true;
+      return (m.name+' '+m.ip+' '+(m.mac||'')).toLowerCase().indexOf(kw) >= 0;
+    });
+    if(sortKey){
+      list = list.slice().sort(function(a,b){
+        var A=String(a[sortKey]||''), B=String(b[sortKey]||'');
+        return A.localeCompare(B,'zh',{numeric:true}) * sortDir;
+      });
+    }
+    return list;
+  }
+
+  /* ---------- 渲染 ---------- */
+  var ST = {online:{cls:'s-online',txt:'在线'}, offline:{cls:'s-offline',txt:'离线'}, waking:{cls:'s-waking',txt:'唤醒中'}};
+
+  function rowsEl(list){
+    return list.map(function(m,i){
+      var s = ST[m.status] || ST.offline;
+      var stHtml = s.txt === '唤醒中'
+        ? '唤醒中<span class="dots"><i></i><i></i><i></i></span>'
+        : s.txt;
+      return '<div class="row '+s.cls+'" data-id="'+m._id+'" data-sel="'+(sel[m._id]?'1':'0')+'" style="--i:'+i+'">'+
+        '<div><button class="cb" role="checkbox" aria-checked="'+(sel[m._id]?'true':'false')+'" data-role="row">'+ico('check',11,2.6)+'</button></div>'+
+        '<div style="min-width:0"><span class="nm">'+esc(m.name)+'</span><span class="mac">'+esc(m.mac||'')+'</span></div>'+
+        '<div class="addr">'+esc(m.ip)+'</div>'+
+        '<div class="st"><span class="dot"></span><span class="stext">'+stHtml+'</span></div>'+
+      '</div>';
+    }).join('');
+  }
+
+  function render(full){
+    var list = view();
+    if(full !== false){
+      tbody.innerHTML = rowsEl(list);
+      tbody.scrollTop = 0;
+    } else {
+      /* 只更新状态与选中态，保持动画不重播 */
+      list.forEach(function(m){
+        var row = tbody.querySelector('.row[data-id="'+m._id+'"]');
+        if(!row) return;
+        row.className = 'row ' + (ST[m.status]||ST.offline).cls;
+        row.dataset.sel = sel[m._id] ? '1':'0';
+        row.querySelector('.cb').setAttribute('aria-checked', sel[m._id]?'true':'false');
+        var st = row.querySelector('.stext');
+        st.innerHTML = m.status==='waking'
+          ? '唤醒中<span class="dots"><i></i><i></i><i></i></span>' : (ST[m.status]||ST.offline).txt;
+      });
+    }
+    noResult.style.display = (list.length === 0 && machines.length > 0) ? 'block' : 'none';
+    renderStats(); renderAll(); renderWake();
+  }
+
+  function renderStats(){
+    var c = {online:0, offline:0, waking:0};
+    machines.forEach(function(m){ if(c[m.status] !== undefined) c[m.status]++; });
+    statsEl.innerHTML =
+      '<span class="stat"><i class="sdot on"></i>'+c.online+' 在线</span>'+
+      '<span class="sep"></span>'+
+      '<span class="stat"><i class="sdot off"></i>'+c.offline+' 离线</span>'+
+      (c.waking ? '<span class="sep"></span><span class="stat"><i class="sdot wk"></i>'+c.waking+' 唤醒中</span>' : '');
+  }
+
+  function renderAll(){
+    var vis = view();
+    var selectedVisible = vis.filter(function(m){ return sel[m._id]; }).length;
+    var state = selectedVisible === 0 ? 'false' : (selectedVisible === vis.length && vis.length>0 ? 'true' : 'mixed');
+    allCb.classList.toggle('mixed', state === 'mixed');
+    allCb.setAttribute('aria-checked', state === 'true' ? 'true' : 'false');
+    if(state === 'mixed') allCb.setAttribute('aria-checked','mixed');
+  }
+
+  function renderWake(){
+    var n = machines.filter(function(m){ return sel[m._id]; }).length;
+    wakeBtn.disabled = n === 0;
+    wakeBtn.querySelector('.cnt').textContent = n;
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  /* ---------- 提示 ---------- */
+  function toast(kind, text){
+    var glyph = kind==='success' ? ico('check',11,2.6) : kind==='info' ? ico('info',12,1.8) : ico('alert',12,1.8);
+    var t = document.createElement('div');
+    t.className = 'toast toast--'+kind;
+    t.innerHTML = '<span class="t-ico">'+glyph+'</span><span>'+text+'</span>';
+    toastsEl.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('in'); });
+    setTimeout(function(){
+      t.classList.remove('in');
+      setTimeout(function(){ t.remove(); }, 280);
+    }, 2600);
+  }
+
+  /* ---------- 交互 ---------- */
+  searchEl.addEventListener('input', function(e){ query = e.target.value; render(); });
+
+  thead.querySelectorAll('.sortable').forEach(function(h){
+    h.addEventListener('click', function(){
+      var k = h.dataset.sort;
+      if(sortKey === k) sortDir = -sortDir; else { sortKey = k; sortDir = 1; }
+      thead.querySelectorAll('.sortable').forEach(function(x){
+        x.classList.toggle('on', x.dataset.sort === sortKey);
+        x.querySelector('.arw svg').style.transform = (sortKey===x.dataset.sort && sortDir===-1) ? 'rotate(180deg)' : 'none';
+      });
+      render();
+    });
+  });
+
+  function toggle(id){
+    if(sel[id]) delete sel[id]; else sel[id] = true;
+    var row = tbody.querySelector('.row[data-id="'+id+'"]');
+    if(row){
+      row.dataset.sel = sel[id] ? '1':'0';
+      row.querySelector('.cb').setAttribute('aria-checked', sel[id] ? 'true':'false');
+    }
+    renderAll(); renderWake();
+  }
+
+  tbody.addEventListener('click', function(e){
+    var cb = e.target.closest('.cb');
+    var row = e.target.closest('.row');
+    if(!row) return;
+    var id = +row.dataset.id;
+    if(cb){ toggle(id); return; }
+    setTimeout(function(){ if(!dblLock) toggle(id); dblLock = false; }, 190);
+  });
+
+  tbody.addEventListener('dblclick', function(e){
+    var row = e.target.closest('.row'); if(!row) return;
+    dblLock = true;
+    openDialog('edit', byId(+row.dataset.id));
+  });
+
+  tbody.addEventListener('contextmenu', function(e){
+    var row = e.target.closest('.row'); if(!row) return;
+    e.preventDefault();
+    openCtx(e, byId(+row.dataset.id));
+  });
+
+  allCb.addEventListener('click', function(){
+    var vis = view();
+    var anyUnsel = vis.some(function(m){ return !sel[m._id]; });
+    vis.forEach(function(m){ if(anyUnsel) sel[m._id] = true; else delete sel[m._id]; });
+    render();
+  });
+
+  q('[data-role="offline"]').addEventListener('click', function(){
+    var n = 0;
+    machines.forEach(function(m){ if(m.status === 'offline'){ if(!sel[m._id]) n++; sel[m._id] = true; } });
+    render();
+    if(n) toast('info','已勾选 '+n+' 台离线机器');
+    else toast('info','没有可勾选的离线机器');
+  });
+
+  q('[data-role="add"]').addEventListener('click', function(){ openDialog('add'); });
+  q('[data-role="empty-add"]').addEventListener('click', function(){ openDialog('add'); });
+  q('[data-role="edit"]').addEventListener('click', function(){ openDialog('edit', singleSelected()); });
+  q('[data-role="del"]').addEventListener('click', function(){ del(singleSelected()); });
+
+  function singleSelected(){
+    var list = machines.filter(function(m){ return sel[m._id]; });
+    if(list.length !== 1){
+      toast('error', list.length === 0 ? '请先选择一台机器' : '一次只能编辑或删除一台机器');
+      return null;
+    }
+    return list[0];
+  }
+
+  function byId(id){ for(var i=0;i<machines.length;i++) if(machines[i]._id === id) return machines[i]; return null; }
+
+  function del(m){
+    if(!m) return;
+    var name = m.name;
+    machines = machines.filter(function(x){ return x._id !== m._id; });
+    delete sel[m._id];
+    render();
+    toast('success','已删除「'+esc(name)+'」');
+  }
+
+  wakeBtn.addEventListener('click', function(){
+    var picked = machines.filter(function(m){ return sel[m._id]; });
+    if(!picked.length){ toast('error','请先选择要唤醒的机器'); return; }
+    var online = picked.filter(function(m){ return m.status === 'online'; });
+    var target = picked.filter(function(m){ return m.status === 'offline'; });
+    if(online.length) toast('info', online.length + ' 台已在线，已跳过');
+    if(!target.length){ toast('info','所选机器均已在线，无需唤醒'); return; }
+    target.forEach(function(m){ m.status = 'waking'; });
+    render(false); renderStats();
+    toast('success','已向 '+target.length+' 台机器发送唤醒包');
+    if(!o.freeze){
+      var t = setTimeout(function(){
+        var flipped = false;
+        target.forEach(function(m){ if(m.status === 'waking'){ m.status = 'online'; flipped = true; } });
+        if(flipped){ render(false); renderStats(); }
+      }, 5200);
+      resolveTimers.push(t);
+    }
+  });
+
+  /* ---------- 右键菜单 ---------- */
+  function closeCtx(){ ctxEl.classList.remove('on'); }
+  document.addEventListener('click', function(e){ if(!ctxEl.contains(e.target)) closeCtx(); });
+
+  function openCtx(e, m){
+    if(!m) return;
+    ctxEl.innerHTML =
+      '<button data-a="wake">'+ico('bolt',14)+'唤醒 '+(m.status==='online'?'（已在线）':'')+'</button>'+
+      '<button data-a="edit">'+ico('pencil',14)+'编辑</button>'+
+      '<div class="hr"></div>'+
+      '<button class="danger" data-a="del">'+ico('trash',14)+'删除</button>';
+    var r = mount.getBoundingClientRect();
+    ctxEl.classList.add('on');
+    var w = 152, h = 106;
+    var x = e.clientX - r.left, y = e.clientY - r.top;
+    ctxEl.style.left = Math.min(x, r.width - w - 6) + 'px';
+    ctxEl.style.top  = Math.min(y, r.height - h - 6) + 'px';
+    ctxEl.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(ev){
+        ev.stopPropagation(); closeCtx();
+        var a = b.dataset.a;
+        if(a === 'wake'){
+          if(m.status === 'online'){ toast('info','「'+esc(m.name)+'」已在线'); return; }
+          m.status = 'waking'; render(false); renderStats();
+          toast('success','已向 1 台机器发送唤醒包');
+          if(!o.freeze) setTimeout(function(){ if(m.status==='waking'){ m.status='online'; render(false); renderStats(); } }, 5200);
+        }
+        if(a === 'edit') openDialog('edit', m);
+        if(a === 'del') del(m);
+      });
+    });
+  }
+
+  /* ---------- 对话框 ---------- */
+  var FIELDS = [
+    {k:'name',      label:'名称',    req:true, ph:'例如：书房主机',   name:true},
+    {k:'ip',        label:'IP',      req:true, ph:'192.168.2.10'},
+    {k:'mac',       label:'MAC',     req:true, ph:'AA:BB:CC:DD:EE:FF'},
+    {k:'broadcast', label:'广播地址', req:false, ph:'留空则按 IP 自动推算'},
+    {k:'port',      label:'端口',    req:false, ph:'9'}
+  ];
+
+  function isIP(v){
+    var p = String(v).trim().split('.');
+    if(p.length !== 4) return false;
+    return p.every(function(x){ return /^\d{1,3}$/.test(x) && +x <= 255; });
+  }
+  function isMAC(v){ return /^([0-9A-F]{2}:){5}[0-9A-F]{2}$/.test(String(v).trim().toUpperCase()); }
+
+  function validate(k, v){
+    v = String(v||'').trim();
+    if(k === 'name') return v ? '' : '请输入机器名称';
+    if(k === 'ip') return !v ? '请输入 IP 地址' : (isIP(v) ? '' : 'IP 格式不正确，例如 192.168.2.10');
+    if(k === 'mac'){
+      if(!v) return '请输入 MAC 地址';
+      return isMAC(v) ? '' : 'MAC 需为 12 位十六进制，例如 AA:BB:CC:DD:EE:FF';
+    }
+    if(k === 'broadcast') return (!v || isIP(v)) ? '' : '广播地址格式不正确';
+    if(k === 'port') return (!v || (/^\d+$/.test(v) && +v > 0 && +v < 65536)) ? '' : '端口需为 1–65535';
+    return '';
+  }
+
+  function openDialog(mode, values, showErrors){
+    var v = Object.assign({name:'', ip:'', mac:'', broadcast:'', port:'9'}, values||{});
+    var vals_id = values && values._id !== undefined ? values._id : null;
+    overlay.innerHTML =
+      '<div class="dialog" role="dialog" aria-label="'+(mode==='edit'?'编辑机器':'添加机器')+'">'+
+        '<div class="dlg-head"><h3>'+(mode==='edit'?'编辑机器':'添加机器')+'</h3>'+
+          '<button class="dlg-close" data-a="close">'+ico('close',13,1.7)+'</button></div>'+
+        '<div class="dlg-body">'+
+          FIELDS.map(function(f){
+            return '<div class="fld'+(f.name?' name-f':'')+'" data-f="'+f.k+'">'+
+              '<label>'+f.label+(f.req?'<span class="req">*</span>':'')+'</label>'+
+              '<input class="ipt" data-k="'+f.k+'" placeholder="'+f.ph+'" value="'+esc(v[f.k]||'')+'" spellcheck="false" autocomplete="off">'+
+              '<div class="err">'+ico('alert',11,2)+'<span></span></div>'+
+            '</div>';
+          }).join('')+
+        '</div>'+
+        '<div class="dlg-foot">'+
+          '<button class="btn" data-a="cancel">取消</button>'+
+          '<button class="btn-primary" data-a="save">保存</button>'+
+        '</div>'+
+      '</div>';
+    overlay.classList.add('on');
+
+    var dlg = overlay.querySelector('.dialog');
+    var inputs = dlg.querySelectorAll('.ipt');
+
+    function check(show){
+      var ok = true, firstBad = null;
+      FIELDS.forEach(function(f){
+        var inp = dlg.querySelector('[data-k="'+f.k+'"]');
+        var wrap = dlg.querySelector('[data-f="'+f.k+'"]');
+        var msg = validate(f.k, inp.value);
+        if(msg){ ok = false; if(!firstBad) firstBad = inp; }
+        if(show || inp.dataset.touched){
+          wrap.classList.toggle('bad', !!msg);
+          wrap.querySelector('.err span').textContent = msg;
+          inp.dataset.touched = '1';
+        }
+      });
+      return {ok:ok, first:firstBad};
+    }
+
+    inputs.forEach(function(inp){
+      inp.addEventListener('input', function(){
+        if(inp.dataset.k === 'mac'){
+          var raw = inp.value.replace(/[^0-9a-fA-F]/g,'').toUpperCase().slice(0,12);
+          inp.value = raw.replace(/(.{2})/g,'$1:').replace(/:$/,'');
+        }
+        if(inp.dataset.touched) check(false);
+      });
+      inp.addEventListener('blur', function(){ check(false); });
+      inp.addEventListener('keydown', function(e){
+        if(e.key === 'Enter'){ e.preventDefault(); save(); }
+        if(e.key === 'Escape'){ e.preventDefault(); closeDialog(); }
+      });
+    });
+
+    function closeDialog(){ overlay.classList.remove('on'); overlay.innerHTML = ''; }
+
+    function save(){
+      var r = check(true);
+      if(!r.ok){
+        r.first.focus();
+        toast('error','表单存在错误，请检查标红项');
+        return;
+      }
+      var data = {};
+      FIELDS.forEach(function(f){
+        var val = dlg.querySelector('[data-k="'+f.k+'"]').value.trim();
+        data[f.k] = (f.k === 'mac') ? val.toUpperCase() : val;
+      });
+      data.port = data.port ? +data.port : 9;
+      if(mode === 'add'){
+        data.status = 'offline';
+        data._id = Math.max.apply(null, machines.map(function(m){return m._id;}).concat([-1])) + 1;
+        machines.push(data);
+        render();
+        toast('success','已添加「'+esc(data.name)+'」');
+      } else {
+        var cur = byId(vals_id);
+        if(cur){
+          Object.keys(data).forEach(function(k){ if(data[k] !== '') cur[k] = data[k]; });
+          cur.name = data.name; cur.ip = data.ip; cur.mac = data.mac;
+        }
+        render();
+        toast('success','已保存「'+esc(data.name)+'」');
+      }
+      closeDialog();
+    }
+
+    dlg.querySelector('[data-a="save"]').addEventListener('click', save);
+    dlg.querySelector('[data-a="cancel"]').addEventListener('click', closeDialog);
+    dlg.querySelector('[data-a="close"]').addEventListener('click', closeDialog);
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) closeDialog(); });
+
+    var first = dlg.querySelector('.ipt');
+    if(showErrors){ check(true); }
+    else first.focus();
+  }
+
+  /* ---------- 初始 ---------- */
+  var list = view();
+  tbody.innerHTML = rowsEl(list);
+  renderStats(); renderAll(); renderWake();
+
+  return {
+    rerender: function(){ render(); },
+    openAdd: function(){ openDialog('add'); },
+    machines: function(){ return machines; }
+  };
+}
+
+/* 空状态插图：睡觉的显示器 + 月亮 + Zzz */
+function emptyArt(){
+  return '<svg class="empty-art" width="186" height="132" viewBox="0 0 186 132" fill="none" aria-hidden="true">'+
+    '<ellipse cx="93" cy="118" rx="58" ry="7" fill="currentColor" opacity=".09"/>'+
+    '<rect x="26" y="30" width="106" height="68" rx="8" stroke="currentColor" stroke-width="1.6"/>'+
+    '<rect x="34.5" y="38.5" width="89" height="51" rx="5.5" fill="currentColor" opacity=".06"/>'+
+    '<path d="M74 52a15 15 0 1 0 11.8 24.2A16.5 16.5 0 0 1 74 52z" fill="currentColor" opacity=".38"/>'+
+    '<path d="M79 104v9M63 116h32" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'+
+    '<circle cx="44" cy="50" r="1.6" fill="currentColor" opacity=".5"/>'+
+    '<g fill="currentColor" font-family="Segoe UI,sans-serif" font-weight="700">'+
+      '<text class="zzz" x="140" y="62" font-size="11" opacity=".7">Z</text>'+
+      '<text class="zzz" x="149" y="46" font-size="14" opacity=".55">Z</text>'+
+      '<text class="zzz" x="159" y="28" font-size="17" opacity=".4">Z</text>'+
+    '</g>'+
+  '</svg>';
+}
+
+/* ============================================================
+   实例化
+   ============================================================ */
+var DEMO = [
+  {name:'书房主机', ip:'192.168.2.10', mac:'AA:BB:CC:11:22:01', status:'online'},
+  {name:'群晖 NAS', ip:'192.168.2.20', mac:'AA:BB:CC:11:22:02', status:'offline'},
+  {name:'客厅 PC',  ip:'192.168.2.30', mac:'AA:BB:CC:11:22:03', status:'waking'},
+  {name:'工作站',   ip:'192.168.2.40', mac:'AA:BB:CC:11:22:04', status:'offline'},
+  {name:'树莓派',   ip:'192.168.2.50', mac:'AA:BB:CC:11:22:05', status:'online'},
+  {name:'影音主机', ip:'192.168.2.60', mac:'AA:BB:CC:11:22:06', status:'online'}
+];
+
+createWin(document.getElementById('w-light'), {theme:'light', machines:DEMO});
+createWin(document.getElementById('w-dark'),  {theme:'dark',  machines:DEMO});
+createWin(document.getElementById('e-light'), {theme:'light', machines:[], empty:true});
+createWin(document.getElementById('e-dark'),  {theme:'dark',  machines:[], empty:true});
+
+var dflt = createWin(document.getElementById('d-default'), {theme:'light', machines:DEMO, freeze:true});
+dflt.openAdd();
+
+var derr = createWin(document.getElementById('d-error'), {theme:'light', machines:DEMO, freeze:true});
+derr.openAdd();
+(function(){
+  var w = document.getElementById('d-error');
+  var dlg = w.querySelector('.dialog');
+  dlg.querySelector('[data-k="name"]').value = '';
+  dlg.querySelector('[data-k="ip"]').value = '192.168.2.300';
+  dlg.querySelector('[data-k="mac"]').value = 'AA:BB:CC';
+  dlg.querySelector('[data-a="save"]').click();
+  var t = w.querySelector('.toasts'); if(t) t.innerHTML = '';
+})();
+
+/* Toast 图标 */
+document.getElementById('ts1').innerHTML = ico('check',11,2.6);
+document.getElementById('ts2').innerHTML = ico('info',12,1.8);
+document.getElementById('ts3').innerHTML = ico('alert',12,1.8);
+document.getElementById('ts4').innerHTML = ico('check',11,2.6);
+document.getElementById('ts5').innerHTML = ico('info',12,1.8);
+document.getElementById('ts6').innerHTML = ico('alert',12,1.8);
+
+/* 图标集 */
+(function(){
+  var items = [
+    ['bolt','闪电 · 唤醒'],['power','电源 · 离线'],['refresh','刷新 · 扫描'],
+    ['wifi','网口 · 探测'],['plus','添加'],['pencil','编辑'],
+    ['trash','删除'],['search','搜索'],['check','成功'],
+    ['info','提示'],['alert','错误'],['close','关闭']
+  ];
+  document.getElementById('iconset').innerHTML = items.map(function(it){
+    return '<div class="ico-cell">'+ico(it[0],22,1.55)+'<span>'+it[1]+'</span></div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

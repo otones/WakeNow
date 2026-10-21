@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 打包产物
+build/
+dist/
+*.spec
+*.manifest
+
+# 运行期数据（含用户机器信息，不入库）
+machines.json
+machines.json.bak
+machines.json.tmp
+settings.json
+
+# 开发产物
+shots/
+_test_machines.json
+.pytest_cache/
+
+# 编辑器
+.vscode/
+.idea/
+.trae-html-share-packages/
+
+# 临时文件
+*.exe
+!assets/*.ico
