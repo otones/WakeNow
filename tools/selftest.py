@@ -540,12 +540,31 @@ def test_scanner() -> None:
     check("家宽网段不判虚拟", is_virtual_ip("192.168.2.10") is False)
     check("10 段不判虚拟", is_virtual_ip("10.0.0.5") is False)
 
-    # 本机网段候选：不能把代理网段排在第一位
+    # 本机网段候选：候选里不能出现代理/隧道网段
     usable, skipped = candidate_prefixes()
     check("有候选网段", len(usable) > 0, str(usable))
     check("首个不是代理网段",
           not usable[0].startswith("198.18") if usable else False, str(usable))
-    check("代理地址被排除", any(ip.startswith("198.18") for ip in skipped), str(skipped))
+    # 只有本机真的存在这类地址时才要求它进排除列表，
+    # 否则在 CI 等没有代理的机器上会误报
+    from app.scanner import local_ipv4_list
+
+    local_ips = local_ipv4_list()
+    proxy_like = [
+        ip for ip in local_ips
+        if ip.startswith("198.18") or ip.startswith("100.")
+        or ip.startswith("169.254.")
+    ]
+    if proxy_like:
+        check("代理地址被排除",
+              all(ip in skipped for ip in proxy_like),
+              f"本机有 {proxy_like}, 排除列表={skipped}")
+    else:
+        print(f"  跳过  代理地址被排除（本机无此类地址，跳过）")
+    # 无论如何，候选网段里都不该出现被排除的虚拟网段
+    check("候选中无虚拟网段",
+          not any(u.startswith("198.18") or u.startswith("169.254") for u in usable),
+          str(usable))
 
     # 扫描一个必然没有设备的网段，应返回空且给出提示
     report = scan(["203.0.113"], verify=False)
