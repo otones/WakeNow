@@ -1,0 +1,118 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "版本号（如 v1.2.0），留空则用日期"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  # ---------------------------------------------------------------- 自测
+  test:
+    name: Self-test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PySide6
+
+      - name: Run self-test
+        env:
+          QT_QPA_PLATFORM: offscreen
+          PYTHONIOENCODING: utf-8
+        run: python tools/selftest.py
+
+  # ---------------------------------------------------------------- 打包
+  build:
+    name: Build exe
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PySide6 pyinstaller
+
+      - name: Build
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python build.py
+
+      - name: Verify artifact
+        shell: pwsh
+        run: |
+          $exe = "dist/WakeNow.exe"
+          if (-not (Test-Path $exe)) { throw "构建产物不存在: $exe" }
+          $size = (Get-Item $exe).Length / 1MB
+          Write-Host "产物大小: $([math]::Round($size,1)) MB"
+          if ($size -lt 20) { throw "产物体积异常，可能打包不完整" }
+
+      - name: Compute version
+        id: ver
+        shell: pwsh
+        run: |
+          if ("${{ github.ref_type }}" -eq "tag") {
+            $v = "${{ github.ref_name }}"
+          } elseif ("${{ inputs.version }}" -ne "") {
+            $v = "${{ inputs.version }}"
+          } else {
+            $v = "v" + (Get-Date -Format "yyyy.MM.dd") + "-" + "${{ github.run_number }}"
+          }
+          "version=$v" >> $env:GITHUB_OUTPUT
+          Write-Host "版本: $v"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WakeNow-exe
+          path: dist/WakeNow.exe
+          retention-days: 30
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.version }}
+          name: WakeNow ${{ steps.ver.outputs.version }}
+          files: dist/WakeNow.exe
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## WakeNow ${{ steps.ver.outputs.version }}
+
+            Windows 局域网唤醒（Wake-on-LAN）工具。
+
+            ### 下载
+            下载下方的 `WakeNow.exe`，放到任意目录双击运行，无需安装。
+
+            ### 首次使用
+            1. 点底栏「扫描内网」自动发现局域网设备，勾选后保存
+            2. 勾选离线机器，点「唤醒选中」
+
+            > 目标机器需在 BIOS 与网卡驱动中开启 WOL，并关闭 Windows 快速启动。
+            > 详见 [README](https://github.com/${{ github.repository }}#目标机器需要的前置条件)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
