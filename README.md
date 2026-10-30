@@ -191,7 +191,7 @@ python -m venv .venv
 # 运行
 .venv\Scripts\python main.py
 
-# 自测（无界面，195 项断言）
+# 自测（无界面，196 项断言）
 .venv\Scripts\python tools\selftest.py
 
 # 渲染各状态截图到 shots/
@@ -231,12 +231,13 @@ app/
     toast.py            Toast 轻提示
 docs/                   截图（README 引用）
 tools/
-  selftest.py           无界面自测（195 项）
+  selftest.py           无界面自测（196 项）
   shot.py               离屏截图
   demo_discover.py      实网验证 IP 发现
   make_icon.py          生成 ico
 build.py                PyInstaller 打包
 DESIGN-v1.2.md          v1.2 功能设计文档
+HANDOVER.md             交接文档（架构、踩坑清单、关键决策理由）
 PRD.md                  产品需求文档
 ui-design.html          可交互 UI 设计稿
 ```
